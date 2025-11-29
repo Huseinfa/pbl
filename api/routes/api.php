@@ -2,12 +2,12 @@
 
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\UserController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\EmployeeController; 
 use App\Http\Controllers\Api\PositionController;
 use App\Http\Controllers\Api\DepartmentController;
 Route::get("/user/{id}", [UserController::class, "show_user"]);
+Route::get("/users", [UserController::class, "show_users"]);
 
 Route::post("/login", [AuthController::class, "login"]);
 Route::post("/register", [AuthController::class, "register"])->middleware(
