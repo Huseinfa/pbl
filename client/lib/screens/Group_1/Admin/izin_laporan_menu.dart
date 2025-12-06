@@ -20,29 +20,10 @@ class _AdminIzinDashboardState extends State<AdminIzinDashboard> {
     dashboardFuture = LeaveReportService.instance.getDashboard();
   }
 
-<<<<<<< HEAD
-  Future<Map<String, dynamic>> fetchDashboardData() async {
-    final response = await http.get(
-      Uri.parse(
-        'https://collene-eternal-luba.ngrok-free.dev/api/izin-dashboard',
-      ),
-      headers: {
-        'Accept': 'application/json',
-        'ngrok-skip-browser-warning': 'true',
-      },
-    );
-
-    if (response.statusCode == 200) {
-      return json.decode(response.body);
-    } else {
-      throw Exception('Failed: ${response.statusCode}');
-    }
-=======
   Future<void> _refresh() async {
     setState(() {
       dashboardFuture = LeaveReportService.instance.getDashboard();
     });
->>>>>>> origin/MiniGroup-1
   }
 
   String _getMonthName(int month) {
@@ -66,7 +47,6 @@ class _AdminIzinDashboardState extends State<AdminIzinDashboard> {
 
   @override
   Widget build(BuildContext context) {
-    final double screenHeight = MediaQuery.of(context).size.height;
     final double screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
@@ -111,7 +91,6 @@ class _AdminIzinDashboardState extends State<AdminIzinDashboard> {
               return CustomScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 slivers: [
-                  // HEADER (SAMA seperti sebelum)
                   SliverToBoxAdapter(
                     child: Container(
                       decoration: const BoxDecoration(
@@ -151,7 +130,6 @@ class _AdminIzinDashboardState extends State<AdminIzinDashboard> {
                             ),
                             const SizedBox(height: 30),
 
-                            // STAT CARDS (SAMA seperti sebelum)
                             Row(
                               children: [
                                 Expanded(
@@ -181,7 +159,6 @@ class _AdminIzinDashboardState extends State<AdminIzinDashboard> {
 
                   const SliverToBoxAdapter(child: SizedBox(height: 40)),
 
-                  // BUTTON SEMUA KARYAWAN (SAMA)
                   SliverToBoxAdapter(
                     child: Center(
                       child: GestureDetector(
@@ -213,7 +190,6 @@ class _AdminIzinDashboardState extends State<AdminIzinDashboard> {
 
                   const SliverToBoxAdapter(child: SizedBox(height: 24)),
 
-                  // GRID DEPARTEMEN (SAMA)
                   SliverPadding(
                     padding: EdgeInsets.only(
                       left: 20,
@@ -250,10 +226,6 @@ class _AdminIzinDashboardState extends State<AdminIzinDashboard> {
       ),
     );
   }
-
-  // =============================
-  //      UI COMPONENTS (SAMA)
-  // =============================
 
   Widget _buildCleanStatCard({
     required IconData icon,
