@@ -1,6 +1,7 @@
 // lib/router.dart
 import 'package:client/screens/employee_screen.dart';
 import 'package:client/screens/login_screen.dart';
+import 'package:client/screens/payroll_screen.dart';
 import 'package:client/screens/forgot_password_screen.dart';
 import 'package:client/screens/profile_screen.dart';
 import 'package:client/screens/change_password_screen.dart';
@@ -27,11 +28,10 @@ import 'package:client/screens/Group_1/Admin/department_detail_page.dart';
 final storage = FlutterSecureStorage();
 
 final GoRouter router = GoRouter(
-  initialLocation: "/home",
-
-  // redirect: (context, state) {
-  //   return AuthService.instance.redirectUser(state);
-  // },
+  initialLocation: "/login",
+  redirect: (context, state) {
+    return AuthService.instance.redirectUser(state);
+  },
   routes: [
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) => Scaffold(
@@ -75,6 +75,7 @@ final GoRouter router = GoRouter(
         ),
       ],
     ),
+
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) => Scaffold(
         body: navigationShell,
@@ -99,11 +100,14 @@ final GoRouter router = GoRouter(
         ),
       ],
     ),
-
+    GoRoute(
+      path: "/payroll",
+      builder: (context, state) => const PayrollScreen(),
+    ),
     GoRoute(path: "/login", builder: (context, state) => const LoginScreen()),
     GoRoute(
       path: "/forgot-password",
-      builder: (context, state) => const ForgotPasswordScreen(),
+      builder: (context, state) => ForgotPasswordScreen(),
     ),
     GoRoute(
       path: "/change-password",
