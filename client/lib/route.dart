@@ -21,11 +21,13 @@ import 'package:client/screens/Group_1/Admin/list_template_screen.dart';
 import 'package:client/screens/Group_1/Admin/edit_template_screen.dart';
 import 'package:client/screens/Group_1/Admin/izin_laporan_menu.dart';
 import 'package:client/screens/Group_1/Admin/admin_izin_manager.dart';
+import 'package:client/screens/Group_1/Karyawan/employee_izin_form.dart';
 
 final storage = FlutterSecureStorage();
 
 final GoRouter router = GoRouter(
-  initialLocation: "/home",
+  initialLocation: "/",
+  // initialLocation: "/karyawan/pengajuan",
 
   // redirect: (context, state) {
   //   return AuthService.instance.redirectUser(state);
@@ -169,6 +171,11 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: '/admin/template/list',
       builder: (context, state) => const ListTemplateScreen(),
+    ),
+
+    GoRoute(
+      path: '/karyawan/pengajuan',
+      builder: (context, state) => const EmployeeIzinForm(),
     ),
 
     GoRoute(
