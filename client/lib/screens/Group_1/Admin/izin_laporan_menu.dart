@@ -12,19 +12,20 @@ class AdminIzinDashboard extends StatefulWidget {
 }
 
 class _AdminIzinDashboardState extends State<AdminIzinDashboard> {
+  late final LeaveReportService leaveService = LeaveReportService();
   late Future<ApiResponse<LeaveReportResponse>> dashboardFuture;
 
-  @override
-  void initState() {
-    super.initState();
-    dashboardFuture = LeaveReportService.instance.getDashboard();
-  }
+      @override
+    void initState() {
+      super.initState();
+      dashboardFuture = leaveService.getDashboard();
+    }
 
-  Future<void> _refresh() async {
-    setState(() {
-      dashboardFuture = LeaveReportService.instance.getDashboard();
-    });
-  }
+    Future<void> _refresh() async {
+      setState(() {
+        dashboardFuture = leaveService.getDashboard();
+      });
+    }
 
   String _getMonthName(int month) {
     const months = [
@@ -60,7 +61,7 @@ class _AdminIzinDashboardState extends State<AdminIzinDashboard> {
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.go('/'),
+          onPressed: () => context.go('/admin'),
         ),
       ),
       body: SafeArea(
@@ -109,7 +110,9 @@ class _AdminIzinDashboardState extends State<AdminIzinDashboard> {
                             const Text(
                               'Laporan Statistik Izin',
                               style: TextStyle(
-                                  color: Colors.white70, fontSize: 18),
+                                color: Colors.white70,
+                                fontSize: 18,
+                              ),
                             ),
                             const SizedBox(height: 8),
                             const Text(
@@ -170,7 +173,9 @@ class _AdminIzinDashboardState extends State<AdminIzinDashboard> {
                         },
                         child: Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 32, vertical: 12),
+                            horizontal: 32,
+                            vertical: 12,
+                          ),
                           decoration: BoxDecoration(
                             color: const Color(0xFF00A8E8),
                             borderRadius: BorderRadius.circular(30),
@@ -197,8 +202,7 @@ class _AdminIzinDashboardState extends State<AdminIzinDashboard> {
                       bottom: MediaQuery.of(context).padding.bottom + 100,
                     ),
                     sliver: SliverGrid(
-                      gridDelegate:
-                          SliverGridDelegateWithFixedCrossAxisCount(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 2,
                         crossAxisSpacing: 16,
                         mainAxisSpacing: 16,
@@ -206,10 +210,9 @@ class _AdminIzinDashboardState extends State<AdminIzinDashboard> {
                             ? 0.85
                             : (screenWidth < 420 ? 0.95 : 1.1),
                       ),
-                      delegate: SliverChildBuilderDelegate(
-                        (context, index) {
-                          final dept = data.departments[index];
-                          return _buildDepartmentCard(
+                      delegate: SliverChildBuilderDelegate((context, index) {
+                        final dept = data.departments[index];
+                        return _buildDepartmentCard(
                           name: dept["name"],
                           count: dept["count"],
                           onTap: () {
@@ -220,10 +223,7 @@ class _AdminIzinDashboardState extends State<AdminIzinDashboard> {
                             );
                           },
                         );
-
-                        },
-                        childCount: data.departments.length,
-                      ),
+                      }, childCount: data.departments.length),
                     ),
                   ),
                 ],
@@ -257,8 +257,11 @@ class _AdminIzinDashboardState extends State<AdminIzinDashboard> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon,
-                  size: screenWidth < 380 ? 28 : 36, color: Colors.white),
+              Icon(
+                icon,
+                size: screenWidth < 380 ? 28 : 36,
+                color: Colors.white,
+              ),
               SizedBox(width: screenWidth < 380 ? 8 : 12),
               Text(
                 value,
@@ -292,61 +295,64 @@ class _AdminIzinDashboardState extends State<AdminIzinDashboard> {
   }
 
   Widget _buildDepartmentCard({
-  required String name,
-  required String count,
-  required VoidCallback onTap,
+    required String name,
+    required String count,
+    required VoidCallback onTap,
   }) {
-  return GestureDetector(
-    onTap: onTap,
-    child: Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: const Color(0xFF00C4D6),
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.12),
-            blurRadius: 12,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          CircleAvatar(
-            radius: 28,
-            backgroundColor: Colors.white,
-            child: Icon(Icons.person,
-                size: 32, color: const Color(0xFF00A8E8)),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            count,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: const Color(0xFF00C4D6),
+          borderRadius: BorderRadius.circular(24),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.12),
+              blurRadius: 12,
+              offset: const Offset(0, 6),
             ),
-          ),
-          const SizedBox(height: 6),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: Text(
-              name,
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
+          ],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircleAvatar(
+              radius: 28,
+              backgroundColor: Colors.white,
+              child: Icon(
+                Icons.person,
+                size: 32,
+                color: const Color(0xFF00A8E8),
               ),
             ),
-          ),
-        ],
+            const SizedBox(height: 12),
+            Text(
+              count,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: Text(
+                name,
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 }
