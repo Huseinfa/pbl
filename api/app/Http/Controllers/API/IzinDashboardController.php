@@ -151,46 +151,81 @@ class IzinDashboardController extends Controller
         }
     }
 
+    public function IzinDetail($id)
+    {
+        $letter = DB::table('letters')
+            ->select(
+                'letters.id',
+                'letters.status',
+                'letters.request_date',
+                'letters.effective_start_date',
+                'letters.effective_end_date',
+                'letters.notes',
+                'letter_formats.content as reason',
+                'letter_formats.name as letter_name',
+                DB::raw("CONCAT(employees.first_name, ' ', employees.last_name) AS full_name"),
+                'departments.name as department_name'
+            )
+            ->join('employees', 'letters.employee_id', '=', 'employees.id')
+            ->join('departments', 'employees.department_id', '=', 'departments.id')
+            ->join('letter_formats', 'letters.letter_format_id', '=', 'letter_formats.id')
+            ->where('letters.id', $id)
+            ->first();
+
+        if (!$letter) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data surat tidak ditemukan'
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $letter
+        ]);
+    }
+
     public function updateStatus(Request $request, $id)
     {
         try {
             $status = $request->status;
+            $notes = $request->notes;
 
             if (!in_array($status, [0, 1, 2])) {
                 return ResponseWrapper::make(
                     "Status tidak valid",
                     400,
                     false,
-                    null,           // data
-                    null            // errors
+                    null,
+                    null
                 );
             }
 
             DB::table('letters')
                 ->where('id', $id)
                 ->update([
-                    'status' => $status
+                    'status' => $status,
+                    'notes'  => $notes // <--- Simpan NOTES
                 ]);
 
             return ResponseWrapper::make(
-                "Status berhasil diperbarui",
+                "Status & catatan berhasil diperbarui",
                 200,
                 true,
-                null,           // data
-                null            // errors
+                null,
+                null
             );
+
         } catch (\Exception $e) {
             return ResponseWrapper::make(
-                "Gagal memperbarui status",
+                "Gagal memperbarui",
                 500,
                 false,
-                null,                // data
-                $e->getMessage()     // errors
+                null,
+                $e->getMessage()
             );
         }
     }
-
-
 
 
     public function exportApprovedLetters(Request $request)
