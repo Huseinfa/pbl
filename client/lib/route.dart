@@ -212,11 +212,11 @@ final GoRouter router = GoRouter(
     ),
 
     // PLACEHOLDER ROUTES FOR FUTURE SCREENS
-    GoRoute(
-      path: '/absensi',
-      name: 'absensi',
-      builder: (context, state) => const PlaceholderScreen(title: 'Absensi'),
-    ),
+    // GoRoute(
+    //   path: '/absensi',
+    //   name: 'absensi',
+    //   builder: (context, state) => const PlaceholderScreen(title: 'Absensi'),
+    // ),
 
     // GoRoute(
     //   path: '/karyawan',
@@ -261,10 +261,10 @@ final GoRouter router = GoRouter(
     //     return EditTemplateScreen(template: data);
     //   },
     // ),
-    GoRoute(
-      path: '/karyawan/pengajuan',
-      builder: (context, state) => const EmployeeIzinForm(),
-    ),
+    // GoRoute(
+    //   path: '/karyawan/pengajuan',
+    //   builder: (context, state) => const EmployeeIzinForm(),
+    // ),
 
     GoRoute(
       path: "/admin/template/edit",

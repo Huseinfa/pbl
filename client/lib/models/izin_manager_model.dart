@@ -15,7 +15,8 @@ class IzinModel {
   final String endDate;
   final String reason;
   final String letterName;
-  final String notes;
+  final String? notes;
+  final String filledTemplate;
 
   IzinModel({
     required this.id,
@@ -30,7 +31,8 @@ class IzinModel {
     required this.endDate,
     required this.reason,
     required this.letterName,
-    required this.notes,
+    this.notes,
+    required this.filledTemplate,
   });
 
   factory IzinModel.fromJson(Map<String, dynamic> json) {
@@ -67,7 +69,8 @@ class IzinModel {
       endDate: json["effective_end_date"]?.toString() ?? "",
       reason: json["reason"]?.toString() ?? "",
       letterName: json["letter_name"]?.toString() ?? "",
-      notes: json["notes"]?.toString() ?? "",
+      notes: json["notes"]?.toString(),
+      filledTemplate: json["filled_template"]?.toString() ?? json["reason"]?.toString() ?? "",
     );
   }
 }

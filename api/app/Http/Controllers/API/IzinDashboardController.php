@@ -164,10 +164,14 @@ class IzinDashboardController extends Controller
                 'letter_formats.content as reason',
                 'letter_formats.name as letter_name',
                 DB::raw("CONCAT(employees.first_name, ' ', employees.last_name) AS full_name"),
-                'departments.name as department_name'
+                'employees.first_name',
+                'employees.last_name',
+                'departments.name as department_name',
+                'positions.name as position_name'
             )
             ->join('employees', 'letters.employee_id', '=', 'employees.id')
             ->join('departments', 'employees.department_id', '=', 'departments.id')
+            ->leftJoin('positions', 'employees.position_id', '=', 'positions.id')
             ->join('letter_formats', 'letters.letter_format_id', '=', 'letter_formats.id')
             ->where('letters.id', $id)
             ->first();
@@ -179,10 +183,52 @@ class IzinDashboardController extends Controller
             ], 404);
         }
 
+        // Fill template placeholders
+        $filledTemplate = $this->fillTemplatePlaceholders(
+            $letter->reason,
+            [
+                'first_name' => $letter->first_name,
+                'last_name' => $letter->last_name,
+                'position' => $letter->position_name ?? '-',
+                'department_name' => $letter->department_name,
+                'letter_name' => $letter->letter_name,
+                'effective_start_date' => $letter->effective_start_date,
+                'effective_end_date' => $letter->effective_end_date,
+            ]
+        );
+
+        // Convert to array and add filled template
+        $letterData = (array) $letter;
+        $letterData['filled_template'] = $filledTemplate;
+
         return response()->json([
             'success' => true,
-            'data' => $letter
+            'data' => $letterData
         ]);
+    }
+
+    /**
+     * Fill template placeholders with actual values
+     */
+    private function fillTemplatePlaceholders($template, $data)
+    {
+        $filled = $template;
+
+        // Replace {{placeholder}} format
+        foreach ($data as $key => $value) {
+            $filled = str_replace('{{' . $key . '}}', $value ?? '', $filled);
+        }
+
+        // Replace [placeholder] format
+        foreach ($data as $key => $value) {
+            $filled = str_replace('[' . $key . ']', $value ?? '', $filled);
+        }
+
+        // Replace special placeholders
+        $filled = str_replace('{{NAMA SURAT}}', $data['letter_name'] ?? '', $filled);
+        $filled = str_replace('{{Alasan izin}}', $data['letter_name'] ?? '', $filled);
+
+        return $filled;
     }
 
     public function updateStatus(Request $request, $id)

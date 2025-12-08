@@ -178,8 +178,8 @@ class _AdminIzinDetailPageState extends State<AdminIzinDetailPage> {
               ],
             ),
             child: Text(
-              item.reason.isNotEmpty ? item.reason : "Tidak ada deskripsi",
-              style: const TextStyle(fontSize: 14),
+              item.filledTemplate.isNotEmpty ? item.filledTemplate : "Tidak ada deskripsi",
+              style: const TextStyle(fontSize: 14, height: 1.5),
             ),
           ),
 
