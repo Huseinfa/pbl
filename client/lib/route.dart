@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:client/services/auth_service.dart';
 import 'package:client/models/employee_model.dart';
 import 'package:client/widgets/navbar_admin.dart';
@@ -31,24 +30,18 @@ import 'package:client/screens/change_password_screen.dart';
 import 'package:client/screens/register_screen.dart';
 import 'package:client/screens/placeholder_screen.dart';
 
-final storage = FlutterSecureStorage();
-
 final GoRouter router = GoRouter(
   initialLocation: "/login",
-  redirect: (context, state) {
-    return AuthService.instance.redirectUser(state);
-  },
+  redirect: (context, state) => AuthService.instance.redirectUser(state),
   routes: [
-    // ========================================
-    // ADMIN SHELL ROUTES (PROTECTED)
-    // ========================================
+    // ================== ADMIN SHELL (PROTECTED) ==================
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) => Scaffold(
         body: navigationShell,
         bottomNavigationBar: NavbarAdmin(navigationShell: navigationShell),
       ),
       branches: [
-        // BRANCH 1 – Admin Home + Izin Management + CRUD Management
+        // Branch 1: Admin Home + Management
         StatefulShellBranch(
           routes: [
             GoRoute(
@@ -57,7 +50,7 @@ final GoRouter router = GoRouter(
               builder: (context, state) => const HomeScreenAdmin(),
             ),
 
-            // ========== IZIN ROUTES ==========
+            // Izin Routes
             GoRoute(
               path: '/laporan-izin',
               name: 'laporan_izin',
@@ -68,8 +61,15 @@ final GoRouter router = GoRouter(
               name: 'kelola_izin',
               builder: (context, state) => const AdminIzinManager(),
             ),
+            GoRoute(
+              path: '/admin/izin/detail/:id',
+              builder: (context, state) {
+                final id = int.parse(state.pathParameters['id']!);
+                return AdminIzinDetailPage(id: id);
+              },
+            ),
 
-            // ========== LETTER ROUTES ==========
+            // Letter Routes
             GoRoute(
               path: '/admin/all-letters',
               builder: (context, state) {
@@ -85,7 +85,7 @@ final GoRouter router = GoRouter(
               },
             ),
 
-            // ========== TEMPLATE ROUTES ==========
+            // Template Routes
             GoRoute(
               path: '/admin/template/add',
               builder: (context, state) => const AddTemplateScreen(),
@@ -102,34 +102,21 @@ final GoRouter router = GoRouter(
               },
             ),
 
-            // ========== IZIN DETAIL ==========
-            GoRoute(
-              path: '/admin/izin/detail/:id',
-              builder: (context, state) {
-                final id = int.parse(state.pathParameters['id']!);
-                return AdminIzinDetailPage(id: id);
-              },
-            ),
-
-            // ✅ POSITION CRUD (MOVED TO SHELL - PROTECTED)
+            // CRUD Management
             GoRoute(
               path: "/admin/positions",
               builder: (context, state) => const PositionCrudScreen(),
             ),
-
-            // ✅ DEPARTMENT CRUD (MOVED TO SHELL - PROTECTED)
             GoRoute(
               path: "/admin/departments",
               builder: (context, state) => const DepartmentCrudScreen(),
             ),
-
-            // ✅ PAYROLL (MOVED TO SHELL - PROTECTED)
             GoRoute(
               path: "/payroll",
               builder: (context, state) => const PayrollScreen(),
             ),
 
-            // ========== PLACEHOLDER ROUTES ==========
+            // Placeholder Routes
             GoRoute(
               path: '/absensi',
               name: 'absensi',
@@ -151,7 +138,7 @@ final GoRouter router = GoRouter(
           ],
         ),
 
-        // BRANCH 2 – Employee Management & Register
+        // Branch 2: Employee Management
         StatefulShellBranch(
           routes: [
             GoRoute(
@@ -186,7 +173,7 @@ final GoRouter router = GoRouter(
           ],
         ),
 
-        // BRANCH 3 – Admin Profile (OWN PROFILE)
+        // Branch 3: Admin Profile
         StatefulShellBranch(
           routes: [
             GoRoute(
@@ -196,7 +183,7 @@ final GoRouter router = GoRouter(
           ],
         ),
 
-        // BRANCH 4 – Attendance
+        // Branch 4: Attendance
         StatefulShellBranch(
           routes: [
             GoRoute(
@@ -206,7 +193,7 @@ final GoRouter router = GoRouter(
           ],
         ),
 
-        // BRANCH 5 – Schedule
+        // Branch 5: Schedule
         StatefulShellBranch(
           routes: [
             GoRoute(
@@ -218,16 +205,14 @@ final GoRouter router = GoRouter(
       ],
     ),
 
-    // ========================================
-    // USER SHELL ROUTES (PROTECTED)
-    // ========================================
+    // ================== USER SHELL (PROTECTED) ==================
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) => Scaffold(
         body: navigationShell,
         bottomNavigationBar: NavbarUser(navigationShell: navigationShell),
       ),
       branches: [
-        // BRANCH 1 – Employee Home + Izin
+        // Branch 1: Employee Home + Izin
         StatefulShellBranch(
           routes: [
             GoRoute(
@@ -241,7 +226,7 @@ final GoRouter router = GoRouter(
           ],
         ),
 
-        // BRANCH 2 – Employee Profile (OWN PROFILE)
+        // Branch 2: Employee Profile
         StatefulShellBranch(
           routes: [
             GoRoute(
@@ -251,7 +236,7 @@ final GoRouter router = GoRouter(
           ],
         ),
 
-        // BRANCH 3 – Employee Attendance
+        // Branch 3: Employee Attendance
         StatefulShellBranch(
           routes: [
             GoRoute(
@@ -263,29 +248,22 @@ final GoRouter router = GoRouter(
       ],
     ),
 
-    // ========================================
-    // NON-SHELL ROUTES (Specific Cases)
-    // ========================================
-
-    // Edit Personal (Employee Mode) - PROTECTED
+    // ================== NON-SHELL ROUTES ==================
+    // Edit Personal (Protected)
     GoRoute(
       path: "/employee/edit-personal/:id",
       builder: (context, state) {
         final employee = state.extra as EmployeeModel?;
-
         if (employee == null) {
           return const Scaffold(
             body: Center(child: Text('Error: Data karyawan tidak ditemukan')),
           );
         }
-
         return EditPersonalScreen(employee: employee);
       },
     ),
 
-    // ========================================
-    // AUTHENTICATION ROUTES (PUBLIC)
-    // ========================================
+    // ================== AUTHENTICATION ROUTES (PUBLIC) ==================
     GoRoute(
       path: "/login",
       name: 'login',
