@@ -50,7 +50,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         return;
       }
 
-      final response = await EmployeeService.instance.getEmployeeById(targetUserId);
+      final response = await EmployeeService.instance.getEmployeeById(
+        targetUserId,
+      );
 
       if (response.success && response.data != null) {
         setState(() {
@@ -60,17 +62,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
       } else {
         setState(() => _isLoading = false);
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(response.message)),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(response.message)));
         }
       }
     } catch (e) {
       setState(() => _isLoading = false);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Gagal memuat data: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Gagal memuat data: $e')));
       }
     }
   }
@@ -84,16 +86,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
 
     if (!response.success) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(response.message)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(response.message)));
       return;
     }
 
     context.go("/login");
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(response.message)),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(response.message)));
   }
 
   @override
@@ -150,13 +152,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 child: CircleAvatar(
                                   radius: 50,
                                   backgroundColor: const Color(0xFF1B7FA8),
-                                  backgroundImage: _employee?.profilePhotoUrl != null
-                                      ? NetworkImage(_employee!.profilePhotoUrl!)
+                                  backgroundImage:
+                                      _employee?.profilePhotoUrl != null
+                                      ? NetworkImage(
+                                          _employee!.profilePhotoUrl!,
+                                        )
                                       : null,
                                   child: _employee?.profilePhotoUrl == null
                                       ? Text(
                                           _employee?.fullName.isNotEmpty == true
-                                              ? _employee!.fullName[0].toUpperCase()
+                                              ? _employee!.fullName[0]
+                                                    .toUpperCase()
                                               : '?',
                                           style: const TextStyle(
                                             color: Colors.white,
@@ -175,7 +181,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   top: 0,
                                   child: Container(
                                     decoration: BoxDecoration(
-                                      color: const Color.fromARGB(255, 84, 172, 255),
+                                      color: const Color.fromARGB(
+                                        255,
+                                        84,
+                                        172,
+                                        255,
+                                      ),
                                       shape: BoxShape.circle,
                                       boxShadow: [
                                         BoxShadow(
@@ -188,7 +199,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     child: IconButton(
                                       icon: const Icon(
                                         Icons.edit,
-                                        color: Color.fromARGB(255, 255, 144, 17),
+                                        color: Color.fromARGB(
+                                          255,
+                                          255,
+                                          144,
+                                          17,
+                                        ),
                                         size: 24,
                                       ),
                                       onPressed: () async {
@@ -207,26 +223,44 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ],
                           ),
 
-                          const SizedBox(height: 25),
+                          const SizedBox(height: 15),
 
                           // ✅ INFO CARDS
-                          _buildInfoCard("Nama Depan", _employee?.firstName ?? "-"),
-                          _buildInfoCard("Nama Belakang", _employee?.lastName ?? "-"),
-                          _buildInfoCard("Email", _employee?.user?.email ?? "-"),
+                          _buildInfoCard(
+                            "Nama Depan",
+                            _employee?.firstName ?? "-",
+                          ),
+                          _buildInfoCard(
+                            "Nama Belakang",
+                            _employee?.lastName ?? "-",
+                          ),
+                          _buildInfoCard(
+                            "Email",
+                            _employee?.user?.email ?? "-",
+                          ),
                           _buildInfoCard(
                             "Jenis Kelamin",
                             _employee?.gender == 'L'
                                 ? "Laki-laki"
                                 : _employee?.gender == 'P'
-                                    ? "Perempuan"
-                                    : "-",
+                                ? "Perempuan"
+                                : "-",
                           ),
                           _buildInfoCard("Alamat", _employee?.address ?? "-"),
-                          _buildInfoCard("Status", _employee?.employmentStatus ?? "-"),
-                          _buildInfoCard("Posisi", _employee?.position?.name ?? "-"),
-                          _buildInfoCard("Departemen", _employee?.department?.name ?? "-"),
+                          _buildInfoCard(
+                            "Status",
+                            _employee?.employmentStatus ?? "-",
+                          ),
+                          _buildInfoCard(
+                            "Posisi",
+                            _employee?.position?.name ?? "-",
+                          ),
+                          _buildInfoCard(
+                            "Departemen",
+                            _employee?.department?.name ?? "-",
+                          ),
 
-                          const SizedBox(height: 25),
+                          const SizedBox(height: 12),
 
                           // ✅ INFORMASI GAJI BUTTON (BOTH MODES)
                           SizedBox(
@@ -234,7 +268,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             child: ElevatedButton.icon(
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: const Color(0xFF4CB050),
-                                padding: const EdgeInsets.symmetric(vertical: 16),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 16,
+                                ),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(14),
                                 ),
@@ -265,7 +301,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               child: ElevatedButton.icon(
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: const Color(0xFFF1A53B),
-                                  padding: const EdgeInsets.symmetric(vertical: 16),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 16,
+                                  ),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(14),
                                   ),
@@ -282,7 +320,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     }
                                   }
                                 },
-                                icon: const Icon(Icons.edit, color: Colors.white),
+                                icon: const Icon(
+                                  Icons.edit,
+                                  color: Colors.white,
+                                ),
                                 label: const Text(
                                   "Edit Data Karyawan",
                                   style: TextStyle(
@@ -303,15 +344,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               child: ElevatedButton.icon(
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.red,
-                                  padding: const EdgeInsets.symmetric(vertical: 16),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 16,
+                                  ),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(14),
                                   ),
                                 ),
                                 onPressed: () async {
-                                  await handleLogout(context); // ✅ USE NEW HANDLER
+                                  await handleLogout(
+                                    context,
+                                  ); // ✅ USE NEW HANDLER
                                 },
-                                icon: const Icon(Icons.logout, color: Colors.white),
+                                icon: const Icon(
+                                  Icons.logout,
+                                  color: Colors.white,
+                                ),
                                 label: const Text(
                                   "Logout",
                                   style: TextStyle(
@@ -337,10 +385,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildInfoCard(String label, String value) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         color: const Color(0xFF1B7FA8),
-        borderRadius: BorderRadius.circular(25),
+        borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.08),
@@ -353,7 +401,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 6),
+            padding: const EdgeInsets.fromLTRB(16, 6, 16, 3),
             child: Text(
               label,
               style: const TextStyle(
@@ -365,7 +413,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(20),
