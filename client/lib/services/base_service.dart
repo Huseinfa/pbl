@@ -7,12 +7,9 @@ class BaseService<T> {
   @protected
   final Dio dio = Dio(
     BaseOptions(
-      headers: {
-        "ngrok-skip-browser-warning": "true",
-        "Accept": "application/json",
-      },
-      connectTimeout: const Duration(seconds: 15),
-      receiveTimeout: const Duration(seconds: 15),
+      contentType: "application/json",
+      baseUrl: Constant.apiUrl,
+      headers: Map.from({"accept": "application/json"}),
     ),
   );
 
@@ -31,6 +28,7 @@ class BaseService<T> {
     );
   }
 
+  @protected
   List<T> parseData(
     Object? data,
     String attribute,

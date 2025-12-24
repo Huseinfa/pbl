@@ -1,18 +1,9 @@
-// lib/router.dart
-import 'package:client/screens/employee_screen.dart';
-import 'package:client/screens/login_screen.dart';
-import 'package:client/screens/forgot_password_screen.dart';
-import 'package:client/screens/profile_screen.dart';
-import 'package:client/screens/change_password_screen.dart';
-import 'package:client/screens/register_screen.dart';
-import 'package:client/services/auth_service.dart';
-import 'package:client/widgets/navbar_admin.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
-import 'screens/admin_screen.dart';
-import 'widgets/navbar_user.dart';
-import 'package:client/screens/placeholder_screen.dart';
+import 'package:go_router/go_router.dart';
+import 'package:client/services/auth_service.dart';
+import 'package:client/models/employee_model.dart';
+import 'package:client/widgets/navbar_admin.dart';
+import 'package:client/widgets/navbar_user.dart';
 import 'package:client/screens/Group_1/home_screen_admin.dart';
 import 'package:client/screens/Group_1/home_screen_employee.dart';
 import 'package:client/screens/Group_1/Karyawan/employee_izin_form.dart';
@@ -24,25 +15,33 @@ import 'package:client/screens/Group_1/Admin/izin_laporan_menu.dart';
 import 'package:client/screens/Group_1/Admin/admin_izin_manager.dart';
 import 'package:client/screens/Group_1/Admin/department_detail_page.dart';
 import 'package:client/screens/Group_1/Admin/IzinDetailPage.dart';
-import 'package:client/screens/Group_1/Karyawan/employee_izin_form.dart';
-
-final storage = FlutterSecureStorage();
+import 'package:client/screens/groupTwo/edit_admin_employee_screen.dart';
+import 'package:client/screens/groupTwo/edit_personal_screen.dart';
+import 'package:client/screens/groupTwo/department_crud_screen.dart';
+import 'package:client/screens/groupTwo/position_crud_screen.dart';
+import 'package:client/screens/employee_screen.dart';
+import 'package:client/screens/login_screen.dart';
+import 'package:client/screens/attendance_screen.dart';
+import 'package:client/screens/schedule_screen.dart';
+import 'package:client/screens/payroll_screen.dart';
+import 'package:client/screens/forgot_password_screen.dart';
+import 'package:client/screens/profile_screen.dart';
+import 'package:client/screens/change_password_screen.dart';
+import 'package:client/screens/register_screen.dart';
+import 'package:client/screens/placeholder_screen.dart';
 
 final GoRouter router = GoRouter(
-  initialLocation: "/",
-  // initialLocation: "/karyawan/pengajuan",
-
-  redirect: (context, state) {
-    return AuthService.instance.redirectUser(state);
-  },
+  initialLocation: "/login",
+  redirect: (context, state) => AuthService.instance.redirectUser(state),
   routes: [
+    // ================== ADMIN SHELL (PROTECTED) ==================
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) => Scaffold(
         body: navigationShell,
         bottomNavigationBar: NavbarAdmin(navigationShell: navigationShell),
       ),
       branches: [
-        // BRANCH 1 – Admin Home + Menu 6 Button
+        // Branch 1: Admin Home + Management
         StatefulShellBranch(
           routes: [
             GoRoute(
@@ -51,43 +50,26 @@ final GoRouter router = GoRouter(
               builder: (context, state) => const HomeScreenAdmin(),
             ),
 
-            // Laporan Izin
+            // Izin Routes
             GoRoute(
               path: '/laporan-izin',
               name: 'laporan_izin',
               builder: (context, state) => const AdminIzinDashboard(),
             ),
-
-            // Kelola Izin
             GoRoute(
               path: '/kelola-izin',
               name: 'kelola_izin',
               builder: (context, state) => const AdminIzinManager(),
             ),
-
-            // Placeholder Menu
             GoRoute(
-              path: '/absensi',
-              name: 'absensi',
-              builder: (context, state) => const PlaceholderScreen(title: 'Absensi'),
-            ),
-            GoRoute(
-              path: '/karyawan',
-              name: 'karyawan',
-              builder: (context, state) => const PlaceholderScreen(title: 'Karyawan'),
-            ),
-            GoRoute(
-              path: '/payroll',
-              name: 'payroll',
-              builder: (context, state) => const PlaceholderScreen(title: 'Payroll'),
-            ),
-            GoRoute(
-              path: '/pengaturan',
-              name: 'pengaturan',
-              builder: (context, state) => const PlaceholderScreen(title: 'Pengaturan'),
+              path: '/admin/izin/detail/:id',
+              builder: (context, state) {
+                final id = int.parse(state.pathParameters['id']!);
+                return AdminIzinDetailPage(id: id);
+              },
             ),
 
-            // Letter Management
+            // Letter Routes
             GoRoute(
               path: '/admin/all-letters',
               builder: (context, state) {
@@ -95,6 +77,15 @@ final GoRouter router = GoRouter(
                 return AllLettersPage(letters: letters);
               },
             ),
+            GoRoute(
+              path: '/admin/department-detail',
+              builder: (context, state) {
+                final dept = state.extra as Map<String, dynamic>;
+                return DepartmentDetailPage(departmentData: dept);
+              },
+            ),
+
+            // Template Routes
             GoRoute(
               path: '/admin/template/add',
               builder: (context, state) => const AddTemplateScreen(),
@@ -106,14 +97,48 @@ final GoRouter router = GoRouter(
             GoRoute(
               path: "/admin/template/edit",
               builder: (context, state) {
-                final data = state.extra as Map;
+                final data = state.extra as Map<String, dynamic>;
                 return EditTemplateScreen(template: data);
               },
+            ),
+
+            // CRUD Management
+            GoRoute(
+              path: "/admin/positions",
+              builder: (context, state) => const PositionCrudScreen(),
+            ),
+            GoRoute(
+              path: "/admin/departments",
+              builder: (context, state) => const DepartmentCrudScreen(),
+            ),
+            GoRoute(
+              path: "/payroll",
+              builder: (context, state) => const PayrollScreen(),
+            ),
+
+            // Placeholder Routes
+            GoRoute(
+              path: '/absensi',
+              name: 'absensi',
+              builder: (context, state) =>
+                  const PlaceholderScreen(title: 'Absensi'),
+            ),
+            GoRoute(
+              path: '/karyawan',
+              name: 'karyawan',
+              builder: (context, state) =>
+                  const PlaceholderScreen(title: 'Karyawan'),
+            ),
+            GoRoute(
+              path: '/pengaturan',
+              name: 'pengaturan',
+              builder: (context, state) =>
+                  const PlaceholderScreen(title: 'Pengaturan'),
             ),
           ],
         ),
 
-        // BRANCH 2 – Employee & Register
+        // Branch 2: Employee Management
         StatefulShellBranch(
           routes: [
             GoRoute(
@@ -123,17 +148,32 @@ final GoRouter router = GoRouter(
             GoRoute(
               path: "/admin/profile-detail",
               builder: (context, state) {
-                return ProfileScreen(userId: state.extra as int);
+                final userId = state.extra as int?;
+                return ProfileScreen(userId: userId);
               },
             ),
             GoRoute(
               path: "/admin/register",
               builder: (context, state) => const RegisterScreen(),
             ),
+            GoRoute(
+              path: "/admin/edit-employee",
+              builder: (context, state) {
+                final employeeId = state.extra as int?;
+                if (employeeId == null) {
+                  return const Scaffold(
+                    body: Center(
+                      child: Text('Error: ID karyawan tidak ditemukan'),
+                    ),
+                  );
+                }
+                return EditAdminEmployeeScreen(employeeId: employeeId);
+              },
+            ),
           ],
         ),
 
-        // BRANCH 3 – Profile
+        // Branch 3: Admin Profile
         StatefulShellBranch(
           routes: [
             GoRoute(
@@ -142,14 +182,37 @@ final GoRouter router = GoRouter(
             ),
           ],
         ),
+
+        // Branch 4: Attendance
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: "/admin/attendance",
+              builder: (context, state) => const AttendanceScreen(),
+            ),
+          ],
+        ),
+
+        // Branch 5: Schedule
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: "/admin/schedule",
+              builder: (context, state) => const ScheduleScreen(),
+            ),
+          ],
+        ),
       ],
     ),
+
+    // ================== USER SHELL (PROTECTED) ==================
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) => Scaffold(
         body: navigationShell,
         bottomNavigationBar: NavbarUser(navigationShell: navigationShell),
       ),
       branches: [
+        // Branch 1: Employee Home + Izin
         StatefulShellBranch(
           routes: [
             GoRoute(
@@ -162,6 +225,8 @@ final GoRouter router = GoRouter(
             ),
           ],
         ),
+
+        // Branch 2: Employee Profile
         StatefulShellBranch(
           routes: [
             GoRoute(
@@ -170,116 +235,47 @@ final GoRouter router = GoRouter(
             ),
           ],
         ),
+
+        // Branch 3: Employee Attendance
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: "/attendance",
+              builder: (context, state) => const AttendanceScreen(),
+            ),
+          ],
+        ),
       ],
     ),
 
-    GoRoute(path: "/login", name:'login', builder: (context, state) => const LoginScreen()),
+    // ================== NON-SHELL ROUTES ==================
+    // Edit Personal (Protected)
+    GoRoute(
+      path: "/employee/edit-personal/:id",
+      builder: (context, state) {
+        final employee = state.extra as EmployeeModel?;
+        if (employee == null) {
+          return const Scaffold(
+            body: Center(child: Text('Error: Data karyawan tidak ditemukan')),
+          );
+        }
+        return EditPersonalScreen(employee: employee);
+      },
+    ),
+
+    // ================== AUTHENTICATION ROUTES (PUBLIC) ==================
+    GoRoute(
+      path: "/login",
+      name: 'login',
+      builder: (context, state) => const LoginScreen(),
+    ),
     GoRoute(
       path: "/forgot-password",
-      builder: (context, state) => const ForgotPasswordScreen(),
+      builder: (context, state) => ForgotPasswordScreen(),
     ),
     GoRoute(
       path: "/change-password",
       builder: (context, state) => const ChangePasswordScreen(),
-    ),
-
-    // HOME SCREEN WITH 6 MENU BUTTONS
-    // GoRoute(
-    //   path: '/',
-    //   name: 'home',
-    //   builder: (context, state) => const HomeScreen(),
-    // ),
-
-    // // EXISTING SCREENS
-    // GoRoute(
-    //   path: '/laporan-izin',
-    //   name: 'laporan_izin',
-    //   builder: (context, state) => const AdminIzinDashboard(),
-    // ),
-
-    // GoRoute(
-    //   path: '/kelola-izin',
-    //   name: 'kelola_izin',
-    //   builder: (context, state) => const AdminIzinManager(),
-    // ),
-
-    GoRoute(
-      path: '/admin/izin/detail/:id',
-      builder: (context, state) {
-        final id = int.parse(state.pathParameters['id']!);
-        return AdminIzinDetailPage(id: id);
-      },
-    ),
-
-    // PLACEHOLDER ROUTES FOR FUTURE SCREENS
-    GoRoute(
-      path: '/absensi',
-      name: 'absensi',
-      builder: (context, state) => const PlaceholderScreen(title: 'Absensi'),
-    ),
-
-    // GoRoute(
-    //   path: '/karyawan',
-    //   name: 'karyawan',
-    //   builder: (context, state) => const PlaceholderScreen(title: 'Karyawan'),
-    // ),
-
-    // GoRoute(
-    //   path: '/payroll',
-    //   name: 'payroll',
-    //   builder: (context, state) => const PlaceholderScreen(title: 'Payroll'),
-    // ),
-
-    // GoRoute(
-    //   path: '/pengaturan',
-    //   name: 'pengaturan',
-    //   builder: (context, state) => const PlaceholderScreen(title: 'Pengaturan'),
-    // ),
-
-    // GoRoute(
-    //   path: '/admin/all-letters',
-    //   builder: (context, state) {
-    //     final letters = state.extra as List<dynamic>;
-    //     return AllLettersPage(letters: letters);
-    //   },
-    // ),
-
-    // GoRoute(
-    //   path: '/admin/template/add',
-    //   builder: (context, state) => const AddTemplateScreen(),
-    // ),
-
-    // GoRoute(
-    //   path: '/admin/template/list',
-    //   builder: (context, state) => const ListTemplateScreen(),
-    // ),
-
-    // GoRoute(
-    //   path: "/admin/template/edit",
-    //   builder: (context, state) {
-    //     final data = state.extra as Map;
-    //     return EditTemplateScreen(template: data);
-    //   },
-    // ),
-    GoRoute(
-      path: '/karyawan/pengajuan',
-      builder: (context, state) => const EmployeeIzinForm(),
-    ),
-
-    GoRoute(
-      path: "/admin/template/edit",
-      builder: (context, state) {
-        final data = state.extra as Map;
-        return EditTemplateScreen(template: data);
-      },
-    ),
-
-    GoRoute(
-      path: '/admin/department-detail',
-      builder: (context, state) {
-        final dept = state.extra as Map<String, dynamic>;
-        return DepartmentDetailPage(departmentData: dept);
-      },
     ),
   ],
 );
